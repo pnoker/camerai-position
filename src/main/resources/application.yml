@@ -1,0 +1,24 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: @project.artifactId@
+  main:
+    allow-bean-definition-overriding: true
+  thymeleaf:
+    cache: false
+    enabled: true
+    check-template: true
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+    servlet:
+      content-type: text/html
+
+logging:
+  level:
+    com.pnoker: DEBUG
+  file:
+    name: logs/${spring.application.name}.log

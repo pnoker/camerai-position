@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>进京证违章摄像头分布</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <style>
+        html, body, #container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .camera-red {
+            color: red;
+        }
+
+        .camera-green {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<script src="layui/layui.js"></script>
+<script src="https://webapi.amap.com/maps?v=1.4.15&key=e63b05c6c51d08f7bcc2679bfde0debe"></script>
+<script>
+    let map = new AMap.Map("container", {
+        resizeEnable: true,
+        center: [116.195908, 39.910971],
+        zoom: 16,
+    });
+
+    let infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)});
+
+    layui.use(['layer'], function () {
+        let $ = layui.$, layer = layui.layer;
+
+        $.ajax({
+            type: 'get', async: false, dataType: 'json', url: 'positions',
+            contentType: 'application/json',
+            success: function (positions) {
+                positions.forEach(function (position) {
+                    let prefix = "<span class='camera-red'>[精确] </span>", icon = "icon/camera-red.png";
+                    if (position.type === 1) {
+                        prefix = "<span class='camera-green'>[模糊] </span>", icon = "icon/camera-green.png";
+                    }
+                    let marker = new AMap.Marker({
+                        map: map,
+                        icon: icon,
+                        position: position.position,
+                        offset: new AMap.Pixel(-16, -28)
+                    });
+                    marker.content = prefix + position.name;
+                    marker.on('click', infoOpen);
+                });
+            }
+        });
+
+        function infoOpen(e) {
+            infoWindow.setContent(e.target.content);
+            infoWindow.open(map, e.target.getPosition());
+
+        }
+
+    });
+</script>
+</body>
+</html>
